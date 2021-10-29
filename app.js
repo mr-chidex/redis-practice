@@ -19,8 +19,10 @@ const getResponse = async (req, res) => {
     const response = await fetch(`https://api.github.com/users/${username}`);
     const data = await response.json();
 
-    if (!data)
-      return res.status(400).json({ message: "invalid username entered" });
+    if (!data || data.message)
+      return res
+        .status(400)
+        .json({ message: data.message || "user not found" });
 
     //set to redis
     await SET_CLIENT(username, 3600, JSON.stringify(data?.public_repos));
